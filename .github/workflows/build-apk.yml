@@ -1,11 +1,9 @@
 name: Build Android APK
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
   build:
@@ -23,74 +21,29 @@ jobs:
         
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
-      with:
-        cmdline-tools-version: 11076708
         
-    - name: Cache Gradle packages
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-          
-    - name: Create proper Gradle Wrapper
+    - name: Install Gradle
       run: |
-        # 删除可能存在的错误wrapper文件
+        wget https://services.gradle.org/distributions/gradle-8.0-bin.zip
+        unzip -q gradle-8.0-bin.zip
+        export PATH=$PATH:$PWD/gradle-8.0/bin
+        
+    - name: Setup Gradle Wrapper
+      run: |
+        # 删除现有的wrapper文件
         rm -rf gradle/wrapper/gradle-wrapper.jar
         
-        # 使用gradle wrapper命令重新生成
-        gradle wrapper --gradle-version 8.0 --distribution-type bin || echo "Gradle not available, downloading manually"
+        # 重新生成wrapper
+        gradle-8.0/bin/gradle wrapper --gradle-version 8.0
         
-        # 如果上面失败，手动下载正确的wrapper
-        if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
-          mkdir -p gradle/wrapper
-          curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.0.0/gradle/wrapper/gradle-wrapper.jar
-        fi
-        
-    - name: Grant execute permission for gradlew
+    - name: Make gradlew executable
       run: chmod +x gradlew
         
     - name: Build debug APK
-      run: ./gradlew assembleDebug --stacktrace --info --no-daemon
+      run: ./gradlew assembleDebug --no-daemon
       
-    - name: Upload Debug APK
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: android-autoclick-debug
         path: app/build/outputs/apk/debug/app-debug.apk
-        retention-days: 30
-        
-    - name: Upload APK to Release
-      if: github.ref == 'refs/heads/main'
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: v1.0.${{ github.run_number }}
-        name: Android AutoClick v1.0.${{ github.run_number }}
-        body: |
-          ## 🎉 Android 自动连点器 v1.0.${{ github.run_number }}
-          
-          ### ✨ 功能特性
-          - 🎯 精确自动点击功能
-          - 🎨 Material Design 3界面
-          - 🪟 可拖拽悬浮窗控制
-          - 🔐 智能权限管理系统
-          - 📊 实时状态和统计显示
-          - 📱 支持Android 5.0+
-          
-          ### 📥 安装说明
-          1. 下载 `app-debug.apk` 文件
-          2. 在Android设备上开启"未知来源"安装
-          3. 安装APK文件
-          4. 授予无障碍服务权限和悬浮窗权限
-          
-          ### ⚠️ 注意事项
-          - 请合理使用，遵守相关应用使用条款
-          - 避免在敏感应用中使用
-        files: app/build/outputs/apk/debug/app-debug.apk
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
