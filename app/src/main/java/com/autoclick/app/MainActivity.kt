@@ -13,6 +13,7 @@ import com.autoclick.app.service.AutoClickService
 import com.autoclick.app.service.FloatingWindowService
 import com.autoclick.app.service.MultiFloatingWindowService
 import com.autoclick.app.utils.ClickSettings
+import com.autoclick.app.utils.ClickPoint
 import com.autoclick.app.utils.PermissionUtils
 
 class MainActivity : AppCompatActivity() {
@@ -249,7 +250,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun showClickPointOptions(point: ClickSettings.ClickPoint) {
+    private fun showClickPointOptions(point: ClickPoint) {
         val options = arrayOf("编辑", "删除", "切换启用状态")
 
         androidx.appcompat.app.AlertDialog.Builder(this)
@@ -265,13 +266,13 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun editClickPoint(point: ClickSettings.ClickPoint) {
+    private fun editClickPoint(point: ClickPoint) {
         val intent = Intent(this, ClickPointConfigActivity::class.java)
         intent.putExtra("point_id", point.id)
         startActivity(intent)
     }
 
-    private fun deleteClickPoint(point: ClickSettings.ClickPoint) {
+    private fun deleteClickPoint(point: ClickPoint) {
         if (ClickSettings.clickPoints.size <= 1) {
             Toast.makeText(this, "至少需要保留一个点击点", Toast.LENGTH_SHORT).show()
             return
@@ -289,7 +290,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun toggleClickPointEnabled(point: ClickSettings.ClickPoint) {
+    private fun toggleClickPointEnabled(point: ClickPoint) {
         ClickSettings.updateClickPoint(point.id, isEnabled = !point.isEnabled)
         sendBroadcast(Intent("com.autoclick.app.CLICK_POINTS_UPDATED"))
         val status = if (point.isEnabled) "已禁用" else "已启用"
