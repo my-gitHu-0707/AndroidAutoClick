@@ -1,106 +1,40 @@
-  name: Build Android APK
+name: Build Android APK
 
-  on:
-    push:
-      branches: [ main, master ]
-    pull_request:
-      branches: [ main, master ]
-    workflow_dispatch:
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
 
-  jobs:
-    build:
-      runs-on: ubuntu-latest
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
       
-      steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
         
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
         
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-            
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      
+    - name: Setup Gradle Wrapper
+      run: |
+        mkdir -p gradle/wrapper
+        curl -L -o gradle/wrapper/gradle-wrapper.jar https://services.gradle.org/distributions/gradle-8.0-wrapper.jar || echo "Download failed, continuing..."
         
-      - name: Create gradle wrapper jar
-        run: |
-          mkdir -p gradle/wrapper
-          # Download gradle wrapper jar
-          curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.0.0/gradle/wrapper/gradle-wrapper.jar || echo "Download failed, will try alternative"
-          
-      - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace
-        
-      - name: Build release APK
-        run: ./gradlew assembleRelease --stacktrace
-        
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-autoclick-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
-          
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-autoclick-release
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
-          
-      - name: Create Release
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v2.0.${{ github.run_number }}
-          name: Android AutoClick v2.0.${{ github.run_number }}
-          body: |
-            ## 🎉 Android 自动连点器 v2.0.${{ github.run_number }}
-
-            ### ✨ 新功能特性
-            - 🎯 **多点击支持** - 支持添加多个点击位置
-            - 🔵 **可视化圆圈** - 每个点击点显示编号圆圈
-            - ⚙️ **独立配置** - 每个点击点可单独设置间隔和启用状态
-            - 📱 **最小化模式** - 应用可最小化，通过悬浮窗控制
-            - 🪟 **增强悬浮窗** - 紧凑的控制面板和添加点击点功能
-            - 🎨 **长按配置** - 长按圆圈可快速配置参数
-
-            ### 🔧 原有功能
-            - ✅ 自动连点功能
-            - ✅ 自定义点击坐标和间隔
-            - ✅ 悬浮窗控制面板
-            - ✅ 权限管理系统
-            - ✅ Material Design 界面
-            
-            ### 安装说明
-            1. 下载 `app-debug.apk` 文件
-            2. 在 Android 设备上开启"未知来源"安装
-            3. 安装 APK 文件
-            4. 授予无障碍服务权限和悬浮窗权限
-            
-            ### 系统要求
-            - Android 5.0 (API 21) 及以上版本
-            
-            ### 注意事项
-            - 请合理使用，遵守相关应用使用条款
-            - 避免在敏感应用中使用
-          files: |
-            app/build/outputs/apk/debug/app-debug.apk
-            app/build/outputs/apk/release/app-release-unsigned.apk
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build debug APK
+      run: ./gradlew assembleDebug --no-daemon
+      
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-autoclick-debug-v2
+        path: app/build/outputs/apk/debug/app-debug.apk
