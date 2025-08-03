@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/mini_control_background"
+    android:padding="8dp"
+    android:gravity="center">
+
+    <!-- 开始/停止按钮 -->
+    <ImageButton
+        android:id="@+id/btnMiniStartStop"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/mini_button_background"
+        android:src="@drawable/ic_play"
+        android:contentDescription="开始/停止"
+        android:layout_marginEnd="8dp" />
+
+    <!-- 展开按钮 -->
+    <ImageButton
+        android:id="@+id/btnExpand"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/mini_button_background"
+        android:src="@drawable/ic_expand"
+        android:contentDescription="展开"
+        android:layout_marginEnd="8dp" />
+
+    <!-- 添加点击点按钮 -->
+    <ImageButton
+        android:id="@+id/btnAddPoint"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/mini_button_background"
+        android:src="@drawable/ic_add"
+        android:contentDescription="添加点击点" />
+
+</LinearLayout>
