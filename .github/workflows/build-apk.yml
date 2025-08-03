@@ -15,15 +15,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Set up JDK 11
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '11'
+        java-version: '17'
         distribution: 'temurin'
         
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
-      
+      with:
+        api-level: 34
+        build-tools: 34.0.0
+        
     - name: Cache Gradle packages
       uses: actions/cache@v3
       with:
@@ -35,21 +38,55 @@ jobs:
           ${{ runner.os }}-gradle-
           
     - name: Grant execute permission for gradlew
-      run: chmod +x AndroidAutoClick/gradlew
+      run: chmod +x gradlew
       
-    - name: Create gradle wrapper jar
+    - name: Download Gradle Wrapper JAR
       run: |
-        cd AndroidAutoClick
         mkdir -p gradle/wrapper
-        curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.0.0/gradle/wrapper/gradle-wrapper.jar || echo "Download failed, will try alternative"
+        # 下载gradle-wrapper.jar
+        curl -L -o gradle/wrapper/gradle-wrapper.jar https://services.gradle.org/distributions/gradle-8.0-wrapper.jar || wget -O gradle/wrapper/gradle-wrapper.jar https://services.gradle.org/distributions/gradle-8.0-wrapper.jar || echo "Download failed, continuing..."
         
+    - name: Validate Gradle wrapper
+      uses: gradle/wrapper-validation-action@v1
+      
     - name: Build debug APK
-      run: |
-        cd AndroidAutoClick
-        ./gradlew assembleDebug --stacktrace
+      run: ./gradlew assembleDebug --stacktrace --info --no-daemon
       
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
         name: android-autoclick-debug
-        path: AndroidAutoClick/app/build/outputs/apk/debug/app-debug.apk
+        path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 30
+        
+    - name: Upload APK to Release
+      if: github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: Android AutoClick v1.0.${{ github.run_number }}
+        body: |
+          ## 🎉 Android 自动连点器 v1.0.${{ github.run_number }}
+          
+          ### ✨ 功能特性
+          - 🎯 精确自动点击功能
+          - 🎨 Material Design 3界面
+          - 🪟 可拖拽悬浮窗控制
+          - 🔐 智能权限管理系统
+          - 📊 实时状态和统计显示
+          - 📱 支持Android 5.0+
+          
+          ### 📥 安装说明
+          1. 下载 `app-debug.apk` 文件
+          2. 在Android设备上开启"未知来源"安装
+          3. 安装APK文件
+          4. 授予无障碍服务权限和悬浮窗权限
+          
+          ### ⚠️ 注意事项
+          - 请合理使用，遵守相关应用使用条款
+          - 避免在敏感应用中使用
+        files: app/build/outputs/apk/debug/app-debug.apk
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
