@@ -21,74 +21,35 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
+      with:
+        api-level: 34
+        build-tools: 34.0.0
 
-    - name: Verify Java version
-      run: java -version
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Check project structure
-      run: |
-        echo "=== Project Structure ==="
-        ls -la
-        echo "=== App directory ==="
-        ls -la app/
-        echo "=== Gradle files ==="
-        ls -la gradle/ || echo "No gradle directory"
-        ls -la gradle/wrapper/ || echo "No gradle/wrapper directory"
-
-    - name: Setup Gradle Wrapper
-      run: |
-        echo "Setting up Gradle Wrapper..."
-
-        # Check if gradle-wrapper.jar already exists
-        if [ -f gradle/wrapper/gradle-wrapper.jar ]; then
-          echo "gradle-wrapper.jar already exists, size: $(wc -c < gradle/wrapper/gradle-wrapper.jar) bytes"
-        else
-          echo "Downloading gradle-wrapper.jar..."
-          # Download from GitHub raw content (more reliable)
-          curl -L -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.0.0/gradle/wrapper/gradle-wrapper.jar || {
-            echo "GitHub download failed, trying alternative..."
-            # Fallback to a different source
-            curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.0.0/gradle/wrapper/gradle-wrapper.jar || {
-              echo "All downloads failed!"
-              exit 1
-            }
-          }
-
-          # Verify the jar file
-          if [ -f gradle/wrapper/gradle-wrapper.jar ]; then
-            echo "gradle-wrapper.jar downloaded successfully, size: $(wc -c < gradle/wrapper/gradle-wrapper.jar) bytes"
-          else
-            echo "ERROR: gradle-wrapper.jar not found after download!"
-            exit 1
-          fi
-        fi
-
-    - name: Check Gradle wrapper
-      run: |
-        echo "=== Gradle Wrapper Check ==="
-        ls -la gradlew
-        ls -la gradle/wrapper/
+    - name: Validate Gradle wrapper
+      uses: gradle/wrapper-validation-action@v1
 
     - name: Clean build
-      run: ./gradlew clean --stacktrace --info
+      run: ./gradlew clean --stacktrace
 
     - name: Build debug APK
-      run: ./gradlew assembleDebug --stacktrace --info --no-daemon
-
-    - name: Check build outputs
-      run: |
-        echo "=== Build Outputs ==="
-        find . -name "*.apk" -type f || echo "No APK files found"
-        ls -la app/build/outputs/ || echo "No build outputs directory"
-        ls -la app/build/outputs/apk/ || echo "No APK outputs directory"
-        ls -la app/build/outputs/apk/debug/ || echo "No debug APK directory"
+      run: ./gradlew assembleDebug --stacktrace --no-daemon
 
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
-        name: android-autoclick-debug-v2
+        name: android-autoclick-debug
         path: app/build/outputs/apk/debug/app-debug.apk
         if-no-files-found: error
