@@ -8,26 +8,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-        
+
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
-      
+
     - name: Verify Java version
       run: java -version
-        
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-      
+
     - name: Check project structure
       run: |
         echo "=== Project Structure ==="
@@ -37,42 +37,47 @@ jobs:
         echo "=== Gradle files ==="
         ls -la gradle/ || echo "No gradle directory"
         ls -la gradle/wrapper/ || echo "No gradle/wrapper directory"
-      
+
     - name: Setup Gradle Wrapper
       run: |
         echo "Setting up Gradle Wrapper..."
-        mkdir -p gradle/wrapper
-        
-        # Download gradle-wrapper.jar
-        echo "Downloading gradle-wrapper.jar..."
-        curl -L -o gradle/wrapper/gradle-wrapper.jar https://services.gradle.org/distributions/gradle-8.0-wrapper.jar || {
-          echo "Primary download failed, trying alternative..."
-          wget -O gradle/wrapper/gradle-wrapper.jar https://services.gradle.org/distributions/gradle-8.0-wrapper.jar || {
-            echo "All downloads failed, checking if file exists..."
-            ls -la gradle/wrapper/
-          }
-        }
-        
-        # Verify the jar file
+
+        # Check if gradle-wrapper.jar already exists
         if [ -f gradle/wrapper/gradle-wrapper.jar ]; then
-          echo "gradle-wrapper.jar exists, size: $(wc -c < gradle/wrapper/gradle-wrapper.jar) bytes"
+          echo "gradle-wrapper.jar already exists, size: $(wc -c < gradle/wrapper/gradle-wrapper.jar) bytes"
         else
-          echo "ERROR: gradle-wrapper.jar not found!"
-          exit 1
+          echo "Downloading gradle-wrapper.jar..."
+          # Download from GitHub raw content (more reliable)
+          curl -L -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.0.0/gradle/wrapper/gradle-wrapper.jar || {
+            echo "GitHub download failed, trying alternative..."
+            # Fallback to a different source
+            curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.0.0/gradle/wrapper/gradle-wrapper.jar || {
+              echo "All downloads failed!"
+              exit 1
+            }
+          }
+
+          # Verify the jar file
+          if [ -f gradle/wrapper/gradle-wrapper.jar ]; then
+            echo "gradle-wrapper.jar downloaded successfully, size: $(wc -c < gradle/wrapper/gradle-wrapper.jar) bytes"
+          else
+            echo "ERROR: gradle-wrapper.jar not found after download!"
+            exit 1
+          fi
         fi
-        
+
     - name: Check Gradle wrapper
       run: |
         echo "=== Gradle Wrapper Check ==="
         ls -la gradlew
         ls -la gradle/wrapper/
-        
+
     - name: Clean build
       run: ./gradlew clean --stacktrace --info
-      
+
     - name: Build debug APK
       run: ./gradlew assembleDebug --stacktrace --info --no-daemon
-      
+
     - name: Check build outputs
       run: |
         echo "=== Build Outputs ==="
@@ -80,7 +85,7 @@ jobs:
         ls -la app/build/outputs/ || echo "No build outputs directory"
         ls -la app/build/outputs/apk/ || echo "No APK outputs directory"
         ls -la app/build/outputs/apk/debug/ || echo "No debug APK directory"
-      
+
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
