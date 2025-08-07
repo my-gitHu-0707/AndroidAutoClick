@@ -81,6 +81,11 @@
             android:name=".service.FloatingMiniControllerService"
             android:exported="false" />
 
+        <!-- 测试悬浮窗服务 -->
+        <service
+            android:name=".service.TestFloatingService"
+            android:exported="false" />
+
     </application>
 
 </manifest>

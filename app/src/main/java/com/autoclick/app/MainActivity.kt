@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +17,7 @@ import com.autoclick.app.service.FloatingWindowService
 import com.autoclick.app.service.ClickPointService
 import com.autoclick.app.service.FloatingControlPanelService
 import com.autoclick.app.service.FloatingControllerManager
+import com.autoclick.app.service.TestFloatingService
 import com.autoclick.app.utils.ClickSettings
 import com.autoclick.app.utils.PermissionUtils
 
@@ -85,6 +88,12 @@ class MainActivity : AppCompatActivity() {
         // 教程说明卡片
         binding.cardTutorial.setOnClickListener {
             showTutorial()
+        }
+
+        // AI操作卡片长按测试悬浮窗
+        binding.cardAIOperation.setOnLongClickListener {
+            testFloatingWindow()
+            true
         }
 
         // 保持原有按钮的兼容性（隐藏状态）
@@ -278,22 +287,52 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createNewClicker() {
-        if (!PermissionUtils.hasAllPermissions(this)) {
-            Toast.makeText(this, "请先授予必要权限", Toast.LENGTH_SHORT).show()
+        Log.d("MainActivity", "Creating new clicker...")
+
+        // 检查无障碍权限
+        if (!PermissionUtils.isAccessibilityServiceEnabled(this)) {
+            Toast.makeText(this, "请先开启无障碍服务", Toast.LENGTH_LONG).show()
+            PermissionUtils.openAccessibilitySettings(this)
             return
         }
 
+        // 检查悬浮窗权限
+        if (!PermissionUtils.canDrawOverlays(this)) {
+            Toast.makeText(this, "请先授予悬浮窗权限", Toast.LENGTH_LONG).show()
+            PermissionUtils.openOverlaySettings(this)
+            return
+        }
+
+        Log.d("MainActivity", "All permissions granted, starting floating panel...")
+
         // 使用管理器启动悬浮控制面板
         FloatingControllerManager.showFullPanel(this)
-        Toast.makeText(this, "悬浮控制面板已启动", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "正在启动悬浮控制面板...", Toast.LENGTH_SHORT).show()
 
-        // 最小化主界面
-        moveTaskToBack(true)
+        // 延迟最小化，给悬浮窗时间显示
+        Handler(Looper.getMainLooper()).postDelayed({
+            moveTaskToBack(true)
+        }, 500)
     }
 
     private fun showTutorial() {
         Toast.makeText(this, "教程功能开发中...", Toast.LENGTH_SHORT).show()
         // TODO: 实现教程功能
+    }
+
+    private fun testFloatingWindow() {
+        Log.d("MainActivity", "Testing floating window...")
+
+        if (!PermissionUtils.canDrawOverlays(this)) {
+            Toast.makeText(this, "没有悬浮窗权限，正在打开设置...", Toast.LENGTH_LONG).show()
+            PermissionUtils.openOverlaySettings(this)
+            return
+        }
+
+        // 启动测试悬浮窗
+        val intent = Intent(this, TestFloatingService::class.java)
+        startService(intent)
+        Toast.makeText(this, "启动测试悬浮窗...", Toast.LENGTH_SHORT).show()
     }
 
     private fun updateFloatingWindowButtonText() {

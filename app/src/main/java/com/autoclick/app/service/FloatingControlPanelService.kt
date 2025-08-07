@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.autoclick.app.MainActivity
 import com.autoclick.app.R
+import com.autoclick.app.utils.PermissionUtils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class FloatingControlPanelService : Service() {
@@ -84,25 +85,40 @@ class FloatingControlPanelService : Service() {
     
     private fun createFloatingPanel() {
         try {
+            Log.d(TAG, "Starting to create floating control panel...")
+
+            // 检查悬浮窗权限
+            if (!PermissionUtils.canDrawOverlays(this)) {
+                Log.e(TAG, "No overlay permission granted")
+                Toast.makeText(this, "请先授予悬浮窗权限", Toast.LENGTH_LONG).show()
+                stopSelf()
+                return
+            }
+
             // 创建悬浮面板视图
             floatingView = LayoutInflater.from(this).inflate(R.layout.floating_control_panel, null)
-            
+            Log.d(TAG, "Floating view inflated successfully")
+
             // 初始化UI组件
             initViews()
-            
+            Log.d(TAG, "UI components initialized")
+
             // 设置窗口参数
             val layoutParams = WindowManager.LayoutParams().apply {
                 width = WindowManager.LayoutParams.WRAP_CONTENT
                 height = WindowManager.LayoutParams.WRAP_CONTENT
                 type = when {
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                        Log.d(TAG, "Using TYPE_APPLICATION_OVERLAY for Android O+")
                         WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
                     }
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
+                        Log.d(TAG, "Using TYPE_SYSTEM_ALERT for Android M+")
                         @Suppress("DEPRECATION")
                         WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
                     }
                     else -> {
+                        Log.d(TAG, "Using TYPE_PHONE for older Android")
                         @Suppress("DEPRECATION")
                         WindowManager.LayoutParams.TYPE_PHONE
                     }
@@ -114,18 +130,25 @@ class FloatingControlPanelService : Service() {
                 x = 50
                 y = 200
             }
-            
+
+            Log.d(TAG, "Window layout params configured")
+
             // 添加悬浮面板到窗口管理器
             windowManager?.addView(floatingView, layoutParams)
             isViewAdded = true
-            
+
+            Log.d(TAG, "Floating view added to window manager")
+
             // 设置拖拽功能
             setupDragListener(layoutParams)
-            
+
             Log.d(TAG, "Floating control panel created successfully")
-            
+            Toast.makeText(this, "悬浮控制面板已显示", Toast.LENGTH_SHORT).show()
+
         } catch (e: Exception) {
             Log.e(TAG, "Failed to create floating control panel", e)
+            Toast.makeText(this, "悬浮面板创建失败: ${e.message}", Toast.LENGTH_LONG).show()
+            stopSelf()
         }
     }
     
