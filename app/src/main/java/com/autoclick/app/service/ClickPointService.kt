@@ -229,4 +229,9 @@ class ClickPointService : Service() {
         fun getX(): Float = (layoutParams.x + 60).toFloat()
         fun getY(): Float = (layoutParams.y + 60).toFloat()
     }
+
+    /**
+     * 获取所有点击位置
+     */
+    fun getClickPoints(): List<ClickPointView> = clickPointViews.toList()
 }

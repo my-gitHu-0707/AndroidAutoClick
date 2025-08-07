@@ -10,6 +10,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.autoclick.app.utils.ClickSettings
+import com.autoclick.app.service.ClickPointService
 import java.util.concurrent.atomic.AtomicBoolean
 
 class AutoClickService : AccessibilityService() {
@@ -25,6 +26,7 @@ class AutoClickService : AccessibilityService() {
     private var clickHandler: Handler? = null
     private var clickRunnable: Runnable? = null
     private var clickCount = 0
+    private var currentPointIndex = 0
     private var mainHandler: Handler = Handler(Looper.getMainLooper())
     
     override fun onServiceConnected() {
@@ -67,6 +69,7 @@ class AutoClickService : AccessibilityService() {
 
         isClicking.set(true)
         clickCount = 0
+        currentPointIndex = 0
 
         // 创建后台线程处理点击操作
         clickHandlerThread = HandlerThread("AutoClickThread").apply {
@@ -77,9 +80,10 @@ class AutoClickService : AccessibilityService() {
         clickRunnable = object : Runnable {
             override fun run() {
                 if (isClicking.get()) {
-                    performClick()
-                    // 使用后台线程的Handler来调度下一次点击
-                    clickHandler?.postDelayed(this, ClickSettings.clickInterval)
+                    performNextClick()
+                    // 使用当前点击位置的间隔
+                    val interval = getCurrentClickInterval()
+                    clickHandler?.postDelayed(this, interval)
                 }
             }
         }
@@ -110,12 +114,45 @@ class AutoClickService : AccessibilityService() {
     }
     
     /**
+     * 执行下一个点击操作
+     */
+    private fun performNextClick() {
+        val clickPointService = ClickPointService.instance
+        val clickPoints = clickPointService?.getClickPoints() ?: emptyList()
+
+        if (clickPoints.isEmpty()) {
+            // 如果没有悬浮点击位置，使用默认位置
+            performClick(ClickSettings.clickX, ClickSettings.clickY)
+            return
+        }
+
+        // 循环点击各个位置
+        val currentPoint = clickPoints[currentPointIndex % clickPoints.size]
+        performClick(currentPoint.getX(), currentPoint.getY())
+
+        // 移动到下一个点击位置
+        currentPointIndex = (currentPointIndex + 1) % clickPoints.size
+    }
+
+    /**
+     * 获取当前点击位置的间隔
+     */
+    private fun getCurrentClickInterval(): Long {
+        val clickPointService = ClickPointService.instance
+        val clickPoints = clickPointService?.getClickPoints() ?: emptyList()
+
+        if (clickPoints.isEmpty()) {
+            return ClickSettings.clickInterval
+        }
+
+        val currentPoint = clickPoints[currentPointIndex % clickPoints.size]
+        return currentPoint.clickInterval
+    }
+
+    /**
      * 执行点击操作
      */
-    private fun performClick() {
-        val x = ClickSettings.clickX
-        val y = ClickSettings.clickY
-        
+    private fun performClick(x: Float, y: Float) {
         if (x <= 0 || y <= 0) {
             Log.w(TAG, "Invalid click coordinates: ($x, $y)")
             return

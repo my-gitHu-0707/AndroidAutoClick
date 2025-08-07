@@ -153,18 +153,12 @@ class MainActivity : AppCompatActivity() {
     
     private fun loadSettings() {
         binding.etClickInterval.setText(ClickSettings.clickInterval.toString())
-        binding.etClickX.setText(ClickSettings.clickX.toString())
-        binding.etClickY.setText(ClickSettings.clickY.toString())
     }
     
     private fun saveSettings() {
         try {
             val interval = binding.etClickInterval.text.toString().toLongOrNull() ?: 1000L
-            val x = binding.etClickX.text.toString().toFloatOrNull() ?: 500f
-            val y = binding.etClickY.text.toString().toFloatOrNull() ?: 500f
-            
             ClickSettings.clickInterval = interval.coerceAtLeast(100L) // 最小间隔100ms
-            ClickSettings.setClickPosition(x.coerceAtLeast(0f), y.coerceAtLeast(0f))
         } catch (e: Exception) {
             Toast.makeText(this, "设置保存失败: ${e.message}", Toast.LENGTH_SHORT).show()
         }
