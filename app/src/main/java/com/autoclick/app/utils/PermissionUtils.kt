@@ -35,7 +35,7 @@ object PermissionUtils {
             val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
-            Toast.makeText(context, "请在设置中找到并启用 ${context.getString(android.R.string.app_name)} 的无障碍服务", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "请在设置中找到并启用 Android Auto Click 的无障碍服务", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             Log.e("PermissionUtils", "Failed to open accessibility settings", e)
             Toast.makeText(context, "无法打开无障碍设置，请手动前往 设置 > 无障碍 中启用服务", Toast.LENGTH_LONG).show()
