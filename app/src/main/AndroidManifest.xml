@@ -31,6 +31,12 @@
             </intent-filter>
         </activity>
 
+        <!-- 点击位置配置Activity -->
+        <activity
+            android:name=".ClickPointConfigActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Material3.DayNight.Dialog" />
+
         <!-- 无障碍服务 -->
         <service
             android:name=".service.AutoClickService"

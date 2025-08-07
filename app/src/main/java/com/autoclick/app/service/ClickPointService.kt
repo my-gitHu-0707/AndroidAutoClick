@@ -1,7 +1,10 @@
 package com.autoclick.app.service
 
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
@@ -13,6 +16,7 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import com.autoclick.app.R
+import com.autoclick.app.ClickPointConfigActivity
 import com.autoclick.app.utils.ClickSettings
 
 class ClickPointService : Service() {
@@ -25,11 +29,33 @@ class ClickPointService : Service() {
     
     private var windowManager: WindowManager? = null
     private val clickPointViews = mutableListOf<ClickPointView>()
+
+    private val configReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "com.autoclick.app.CLICK_POINT_CONFIG_UPDATED") {
+                val interval = intent.getLongExtra(ClickPointConfigActivity.RESULT_INTERVAL, 1000L)
+                val count = intent.getIntExtra(ClickPointConfigActivity.RESULT_COUNT, -1)
+
+                // 更新最后一个点击点的配置（简化处理）
+                if (clickPointViews.isNotEmpty()) {
+                    val lastPoint = clickPointViews.last()
+                    lastPoint.clickInterval = interval
+                    lastPoint.clickCount = count
+                    Log.d(TAG, "Updated click point config: interval=$interval, count=$count")
+                }
+            }
+        }
+    }
     
     override fun onCreate() {
         super.onCreate()
         instance = this
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+
+        // 注册广播接收器
+        val filter = IntentFilter("com.autoclick.app.CLICK_POINT_CONFIG_UPDATED")
+        registerReceiver(configReceiver, filter)
+
         Log.d(TAG, "ClickPointService created")
     }
     
@@ -52,6 +78,14 @@ class ClickPointService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         removeAllClickPoints()
+
+        // 注销广播接收器
+        try {
+            unregisterReceiver(configReceiver)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to unregister receiver", e)
+        }
+
         instance = null
         Log.d(TAG, "ClickPointService destroyed")
     }
@@ -174,8 +208,15 @@ class ClickPointService : Service() {
         }
         
         private fun onLongPress() {
-            // TODO: 显示配置对话框
             Log.d(TAG, "Long press detected on click point")
+
+            // 启动配置Activity
+            val intent = Intent(this@ClickPointService, ClickPointConfigActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                putExtra(ClickPointConfigActivity.EXTRA_INTERVAL, clickInterval)
+                putExtra(ClickPointConfigActivity.EXTRA_COUNT, clickCount)
+            }
+            startActivity(intent)
         }
         
         private fun updateClickPosition() {
