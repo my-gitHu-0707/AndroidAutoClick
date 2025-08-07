@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-    
-    <!-- 渐变背景 -->
-    <gradient
-        android:startColor="#FF4CAF50"
-        android:endColor="#FF2E7D32"
-        android:type="radial"
-        android:gradientRadius="50dp" />
-    
-    <!-- 边框 -->
-    <stroke
-        android:width="3dp"
-        android:color="#FFFFFF" />
-    
-    <!-- 内部圆圈 -->
-    <size
-        android:width="60dp"
-        android:height="60dp" />
-        
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 外圈阴影 -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#40000000" />
+            <size android:width="70dp" android:height="70dp" />
+        </shape>
+    </item>
+
+    <!-- 主体圆圈 -->
+    <item android:top="2dp" android:left="2dp" android:right="2dp" android:bottom="2dp">
+        <shape android:shape="oval">
+            <gradient
+                android:startColor="#FF4CAF50"
+                android:endColor="#FF2E7D32"
+                android:type="radial"
+                android:gradientRadius="30dp" />
+            <stroke
+                android:width="2dp"
+                android:color="#FFFFFF" />
+            <size android:width="66dp" android:height="66dp" />
+        </shape>
+    </item>
+
+    <!-- 中心点 -->
+    <item android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF" />
+            <size android:width="8dp" android:height="8dp" />
+        </shape>
+    </item>
+
+</layer-list>
