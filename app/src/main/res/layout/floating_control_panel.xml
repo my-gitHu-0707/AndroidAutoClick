@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@android:color/transparent"
         android:layout_marginBottom="16dp">
 
         <ImageView
@@ -52,7 +52,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@android:color/transparent"
         android:layout_marginBottom="16dp">
 
         <ImageView
@@ -79,7 +79,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@android:color/transparent"
         android:layout_marginBottom="16dp">
 
         <ImageView
@@ -106,7 +106,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@android:color/transparent"
         android:layout_marginBottom="16dp">
 
         <ImageView
@@ -133,7 +133,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@android:color/transparent"
         android:layout_marginBottom="16dp">
 
         <ImageView
@@ -160,7 +160,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@android:color/transparent"
         android:layout_marginBottom="16dp">
 
         <ImageView
@@ -187,7 +187,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@android:color/transparent"
         android:layout_marginBottom="16dp">
 
         <ImageView
@@ -214,7 +214,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless">
+        android:background="@android:color/transparent">
 
         <ImageView
             android:layout_width="24dp"
