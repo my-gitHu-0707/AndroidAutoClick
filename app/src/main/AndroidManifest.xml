@@ -49,6 +49,11 @@
             android:name=".service.FloatingWindowService"
             android:exported="false" />
 
+        <!-- 点击位置管理服务 -->
+        <service
+            android:name=".service.ClickPointService"
+            android:exported="false" />
+
     </application>
 
 </manifest>

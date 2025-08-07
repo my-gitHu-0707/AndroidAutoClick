@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    
+    <!-- 渐变背景 -->
+    <gradient
+        android:startColor="#FF4CAF50"
+        android:endColor="#FF2E7D32"
+        android:type="radial"
+        android:gradientRadius="50dp" />
+    
+    <!-- 边框 -->
+    <stroke
+        android:width="3dp"
+        android:color="#FFFFFF" />
+    
+    <!-- 内部圆圈 -->
+    <size
+        android:width="60dp"
+        android:height="60dp" />
+        
+</shape>

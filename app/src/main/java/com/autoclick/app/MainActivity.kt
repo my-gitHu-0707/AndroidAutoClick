@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import com.autoclick.app.databinding.ActivityMainBinding
 import com.autoclick.app.service.AutoClickService
 import com.autoclick.app.service.FloatingWindowService
+import com.autoclick.app.service.ClickPointService
 import com.autoclick.app.utils.ClickSettings
 import com.autoclick.app.utils.PermissionUtils
 
@@ -92,6 +93,16 @@ class MainActivity : AppCompatActivity() {
         binding.btnFloatingWindow.setOnClickListener {
             toggleFloatingWindow()
         }
+
+        // 添加点击点按钮
+        binding.btnAddClickPoint.setOnClickListener {
+            addClickPoint()
+        }
+
+        // 管理点击点按钮
+        binding.btnManagePoints.setOnClickListener {
+            manageClickPoints()
+        }
     }
     
     private fun updateUI() {
@@ -102,6 +113,8 @@ class MainActivity : AppCompatActivity() {
         val hasAllPermissions = PermissionUtils.hasAllPermissions(this)
         binding.btnStartStop.isEnabled = hasAllPermissions
         binding.btnFloatingWindow.isEnabled = hasAllPermissions
+        binding.btnAddClickPoint.isEnabled = hasAllPermissions
+        binding.btnManagePoints.isEnabled = hasAllPermissions
         
         // 更新点击状态
         val service = AutoClickService.instance
@@ -211,5 +224,30 @@ class MainActivity : AppCompatActivity() {
             addAction("com.autoclick.app.CLICK_COUNT_UPDATED")
         }
         registerReceiver(serviceReceiver, filter)
+    }
+
+    private fun addClickPoint() {
+        if (!PermissionUtils.canDrawOverlays(this)) {
+            Toast.makeText(this, "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // 在屏幕中央添加一个点击点
+        val intent = Intent(this, ClickPointService::class.java).apply {
+            action = "ADD_CLICK_POINT"
+            putExtra("x", 500f)
+            putExtra("y", 800f)
+        }
+        startService(intent)
+        Toast.makeText(this, "已添加点击位置，可拖拽移动，长按配置", Toast.LENGTH_LONG).show()
+    }
+
+    private fun manageClickPoints() {
+        // 移除所有点击点
+        val intent = Intent(this, ClickPointService::class.java).apply {
+            action = "REMOVE_ALL_POINTS"
+        }
+        startService(intent)
+        Toast.makeText(this, "已清除所有点击位置", Toast.LENGTH_SHORT).show()
     }
 }
