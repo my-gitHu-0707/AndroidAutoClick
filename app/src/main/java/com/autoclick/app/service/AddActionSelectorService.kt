@@ -12,7 +12,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import com.autoclick.app.R
-import com.google.android.material.card.MaterialCardView
+import android.widget.LinearLayout
 
 class AddActionSelectorService : Service() {
     
@@ -27,19 +27,29 @@ class AddActionSelectorService : Service() {
     private val autoHideHandler = Handler(Looper.getMainLooper())
     
     // UI组件
-    private lateinit var cardDoubleClick: MaterialCardView
-    private lateinit var cardLongPress: MaterialCardView
-    private lateinit var cardSwipe: MaterialCardView
+    private lateinit var cardDoubleClick: LinearLayout
+    private lateinit var cardLongPress: LinearLayout
+    private lateinit var cardSwipe: LinearLayout
     
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "AddActionSelectorService created")
-        
+
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        // 检查悬浮窗权限
+        if (!android.provider.Settings.canDrawOverlays(this)) {
+            Log.e(TAG, "No overlay permission")
+            Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_SHORT).show()
+            stopSelf()
+            return
+        }
+
         createSelector()
-        
+
         // 设置自动隐藏
         autoHideHandler.postDelayed({
+            Log.d(TAG, "Auto hiding selector")
             stopSelf()
         }, AUTO_HIDE_DELAY)
     }
@@ -56,11 +66,15 @@ class AddActionSelectorService : Service() {
     
     private fun createSelector() {
         try {
+            Log.d(TAG, "Creating selector view...")
+
             // 创建选择器视图
             selectorView = LayoutInflater.from(this).inflate(R.layout.add_action_selector, null)
-            
+            Log.d(TAG, "Selector view inflated successfully")
+
             // 初始化UI组件
             initViews()
+            Log.d(TAG, "Views initialized")
 
             // 设置窗口参数（居中显示）
             val layoutParams = WindowManager.LayoutParams().apply {
@@ -84,15 +98,18 @@ class AddActionSelectorService : Service() {
                 format = PixelFormat.TRANSLUCENT
                 gravity = Gravity.CENTER
             }
-            
+
+            Log.d(TAG, "Adding view to window manager...")
             // 添加选择器到窗口管理器
             windowManager?.addView(selectorView, layoutParams)
             isViewAdded = true
-            
+
             Log.d(TAG, "Add action selector created successfully")
-            
+            Toast.makeText(this, "选择器已显示", Toast.LENGTH_SHORT).show()
+
         } catch (e: Exception) {
             Log.e(TAG, "Failed to create add action selector", e)
+            Toast.makeText(this, "创建选择器失败: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
     
