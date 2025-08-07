@@ -297,10 +297,12 @@ class FloatingControlPanelService : Service() {
     }
     
     private fun updateExecuteButton(isRunning: Boolean) {
+        // 找到执行按钮中的ImageView并更新图标
+        val executeImageView = layoutExecute.getChildAt(0) as? ImageView
         if (isRunning) {
-            fabExecute.setImageResource(R.drawable.ic_pause)
+            executeImageView?.setImageResource(R.drawable.ic_pause)
         } else {
-            fabExecute.setImageResource(R.drawable.ic_play)
+            executeImageView?.setImageResource(R.drawable.ic_play)
         }
     }
     
