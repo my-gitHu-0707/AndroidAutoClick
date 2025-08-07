@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -70,11 +71,15 @@ class MainActivity : AppCompatActivity() {
     private fun setupListeners() {
         // 无障碍设置按钮
         binding.btnAccessibilitySettings.setOnClickListener {
+            Log.d("MainActivity", "Accessibility settings button clicked")
+            Toast.makeText(this, "正在打开无障碍设置...", Toast.LENGTH_SHORT).show()
             PermissionUtils.openAccessibilitySettings(this)
         }
-        
+
         // 悬浮窗设置按钮
         binding.btnOverlaySettings.setOnClickListener {
+            Log.d("MainActivity", "Overlay settings button clicked")
+            Toast.makeText(this, "正在打开悬浮窗设置...", Toast.LENGTH_SHORT).show()
             PermissionUtils.openOverlaySettings(this)
         }
         
