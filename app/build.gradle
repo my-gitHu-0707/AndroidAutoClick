@@ -31,9 +31,7 @@ android {
         jvmTarget = '1.8'
     }
     buildFeatures {
-        // 暂时禁用binding以诊断问题
-        // viewBinding true
-        // dataBinding true
+        viewBinding true
     }
 }
 
