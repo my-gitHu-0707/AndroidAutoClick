@@ -31,7 +31,23 @@
             </intent-filter>
         </activity>
 
-        <!-- 服务和Activity暂时移除用于调试 -->
+        <!-- 无障碍服务 -->
+        <service
+            android:name=".service.AutoClickService"
+            android:exported="false"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- 悬浮窗服务 -->
+        <service
+            android:name=".service.FloatingWindowService"
+            android:exported="false" />
 
     </application>
 
