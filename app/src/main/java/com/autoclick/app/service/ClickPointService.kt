@@ -98,6 +98,9 @@ class ClickPointService : Service() {
             clickPointViews.add(clickPointView)
             windowManager?.addView(clickPointView.view, clickPointView.layoutParams)
             Log.d(TAG, "Added click point at ($x, $y)")
+
+            // 发送点击位置变化广播
+            sendBroadcast(Intent("com.autoclick.app.CLICK_POINTS_CHANGED"))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add click point", e)
         }
@@ -112,6 +115,9 @@ class ClickPointService : Service() {
             }
         }
         clickPointViews.clear()
+
+        // 发送点击位置变化广播
+        sendBroadcast(Intent("com.autoclick.app.CLICK_POINTS_CHANGED"))
     }
     
     inner class ClickPointView(initialX: Float, initialY: Float) {
@@ -148,8 +154,8 @@ class ClickPointService : Service() {
             }
             
             layoutParams = WindowManager.LayoutParams(
-                50, // width - 小圆圈尺寸
-                50, // height - 小圆圈尺寸
+                70, // width - 小圆圈尺寸
+                70, // height - 小圆圈尺寸
                 windowType,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT
@@ -226,17 +232,27 @@ class ClickPointService : Service() {
         
         private fun updateClickPosition() {
             // 更新ClickSettings中的位置（圆圈中心）
-            ClickSettings.clickX = (layoutParams.x + 25).toFloat() // 圆圈中心
-            ClickSettings.clickY = (layoutParams.y + 25).toFloat()
+            ClickSettings.clickX = (layoutParams.x + 35).toFloat() // 圆圈中心
+            ClickSettings.clickY = (layoutParams.y + 35).toFloat()
             Log.d(TAG, "Updated click position to (${ClickSettings.clickX}, ${ClickSettings.clickY})")
         }
 
-        fun getX(): Float = (layoutParams.x + 25).toFloat()
-        fun getY(): Float = (layoutParams.y + 25).toFloat()
+        fun getX(): Float = (layoutParams.x + 35).toFloat()
+        fun getY(): Float = (layoutParams.y + 35).toFloat()
     }
 
     /**
      * 获取所有点击位置
      */
     fun getClickPoints(): List<ClickPointView> = clickPointViews.toList()
+
+    /**
+     * 检查是否有点击位置
+     */
+    fun hasClickPoints(): Boolean = clickPointViews.isNotEmpty()
+
+    /**
+     * 获取点击位置数量
+     */
+    fun getClickPointCount(): Int = clickPointViews.size
 }

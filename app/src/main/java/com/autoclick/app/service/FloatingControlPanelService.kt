@@ -47,6 +47,9 @@ class FloatingControlPanelService : Service() {
                 "com.autoclick.app.CLICK_STOPPED" -> {
                     updateExecuteButton(false)
                 }
+                "com.autoclick.app.CLICK_POINTS_CHANGED" -> {
+                    updateExecuteButtonState()
+                }
             }
         }
     }
@@ -209,6 +212,7 @@ class FloatingControlPanelService : Service() {
             
             // 初始化状态
             updateExecuteButton(false)
+            updateExecuteButtonState()
         }
     }
     
@@ -271,12 +275,20 @@ class FloatingControlPanelService : Service() {
             updateExecuteButton(false)
             Toast.makeText(this, "已停止", Toast.LENGTH_SHORT).show()
         } else {
+            // 检查是否有点击位置
+            val clickPointService = ClickPointService.instance
+            if (clickPointService == null || !clickPointService.hasClickPoints()) {
+                Log.w(TAG, "No click points available")
+                Toast.makeText(this, "请先添加点击位置", Toast.LENGTH_SHORT).show()
+                return
+            }
+
             // 开始操作
-            Log.d(TAG, "Starting auto click")
+            Log.d(TAG, "Starting auto click with ${clickPointService.getClickPointCount()} points")
             service.startAutoClick()
             // 立即更新UI状态
             updateExecuteButton(true)
-            Toast.makeText(this, "已开始", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "已开始 (${clickPointService.getClickPointCount()}个位置)", Toast.LENGTH_SHORT).show()
         }
     }
     
@@ -322,12 +334,31 @@ class FloatingControlPanelService : Service() {
         } else {
             executeImageView?.setImageResource(R.drawable.ic_play)
         }
+
+        // 检查是否有点击位置，动态启用/禁用按钮
+        updateExecuteButtonState()
+    }
+
+    private fun updateExecuteButtonState() {
+        val clickPointService = ClickPointService.instance
+        val hasClickPoints = clickPointService?.hasClickPoints() ?: false
+        val isRunning = AutoClickService.instance?.isAutoClicking() ?: false
+
+        // 如果正在运行，按钮始终可用（用于停止）
+        // 如果没有运行，只有在有点击位置时才可用
+        val shouldEnable = isRunning || hasClickPoints
+
+        layoutExecute.isEnabled = shouldEnable
+        layoutExecute.alpha = if (shouldEnable) 1.0f else 0.5f
+
+        Log.d(TAG, "Execute button state: enabled=$shouldEnable, hasPoints=$hasClickPoints, isRunning=$isRunning")
     }
     
     private fun registerServiceReceiver() {
         val filter = IntentFilter().apply {
             addAction("com.autoclick.app.CLICK_STARTED")
             addAction("com.autoclick.app.CLICK_STOPPED")
+            addAction("com.autoclick.app.CLICK_POINTS_CHANGED")
         }
         registerReceiver(serviceReceiver, filter)
     }
