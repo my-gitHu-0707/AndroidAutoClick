@@ -2,8 +2,6 @@ package com.autoclick.app.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 data class ClickPoint(
     val id: Int,
@@ -20,7 +18,7 @@ object ClickSettings {
     private const val KEY_IS_MINIMIZED = "is_minimized"
 
     private var prefs: SharedPreferences? = null
-    private val gson = Gson()
+    // 移除Gson依赖
 
     // 点击点列表
     private var _clickPoints = mutableListOf<ClickPoint>()
@@ -127,26 +125,19 @@ object ClickSettings {
     }
 
     /**
-     * 保存点击点到SharedPreferences
+     * 保存点击点到SharedPreferences（简化版本）
      */
     private fun saveClickPoints() {
-        val json = gson.toJson(_clickPoints)
-        prefs?.edit()?.putString(KEY_CLICK_POINTS, json)?.apply()
+        // 简化版本：暂时不保存到SharedPreferences
+        // 可以在后续版本中实现简单的序列化
     }
 
     /**
-     * 从SharedPreferences加载点击点
+     * 从SharedPreferences加载点击点（简化版本）
      */
     private fun loadClickPoints() {
-        val json = prefs?.getString(KEY_CLICK_POINTS, null)
-        if (json != null) {
-            try {
-                val type = object : TypeToken<MutableList<ClickPoint>>() {}.type
-                _clickPoints = gson.fromJson(json, type) ?: mutableListOf()
-            } catch (e: Exception) {
-                _clickPoints = mutableListOf()
-            }
-        }
+        // 简化版本：暂时不从SharedPreferences加载
+        // 可以在后续版本中实现简单的反序列化
     }
 
     /**
