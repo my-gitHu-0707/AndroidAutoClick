@@ -169,9 +169,9 @@ class AddActionSelectorService : Service() {
     
     private fun addSwipeAction() {
         // 添加滑动轨迹
-        Toast.makeText(this, "请在屏幕上绘制滑动轨迹", Toast.LENGTH_LONG).show()
-        // TODO: 启动轨迹绘制模式
-        val intent = Intent(this, SwipeTrackService::class.java)
-        startService(intent)
+        Toast.makeText(this, "滑动轨迹功能开发中...", Toast.LENGTH_LONG).show()
+        // TODO: 实现滑动轨迹功能
+        // val intent = Intent(this, SwipeTrackService::class.java)
+        // startService(intent)
     }
 }

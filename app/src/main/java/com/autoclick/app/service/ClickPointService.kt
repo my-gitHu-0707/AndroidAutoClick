@@ -115,8 +115,9 @@ class ClickPointService : Service() {
     }
     
     inner class ClickPointView(initialX: Float, initialY: Float) {
-        val view: ImageView
+        val view: View
         val layoutParams: WindowManager.LayoutParams
+        private val pointNumber = clickPointViews.size + 1
         
         private var initialTouchX = 0f
         private var initialTouchY = 0f
