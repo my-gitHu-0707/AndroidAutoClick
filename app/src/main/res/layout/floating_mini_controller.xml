@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/mini_controller_background"
+    android:padding="8dp"
+    android:gravity="center">
+
+    <!-- 启动/停止按钮 -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabMiniStartStop"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_play"
+        app:fabSize="mini"
+        app:backgroundTint="#9CCC65"
+        app:tint="#FFFFFF"
+        android:layout_marginEnd="8dp" />
+
+    <!-- 删除所有点击位置按钮 -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabMiniDelete"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_delete"
+        app:fabSize="mini"
+        app:backgroundTint="#FF5722"
+        app:tint="#FFFFFF"
+        android:layout_marginEnd="8dp" />
+
+    <!-- 展开按钮 -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabMiniExpand"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_expand_more"
+        app:fabSize="mini"
+        app:backgroundTint="#2196F3"
+        app:tint="#FFFFFF" />
+
+</LinearLayout>

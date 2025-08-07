@@ -10,10 +10,12 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.autoclick.app.R
 import com.autoclick.app.ClickPointConfigActivity
@@ -128,11 +130,13 @@ class ClickPointService : Service() {
         var clickCount = -1 // -1表示无限次
         
         init {
-            // 创建圆形ImageView
-            view = ImageView(this@ClickPointService).apply {
-                setImageResource(R.drawable.ic_click_point)
-                scaleType = ImageView.ScaleType.CENTER_CROP
-            }
+            // 创建十字线视图
+            view = LayoutInflater.from(this@ClickPointService)
+                .inflate(R.layout.click_position_crosshair, null)
+
+            // 设置编号
+            val tvNumber = view.findViewById<TextView>(R.id.tvNumber)
+            tvNumber.text = pointNumber.toString()
             
             // 设置悬浮窗参数
             val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -143,8 +147,8 @@ class ClickPointService : Service() {
             }
             
             layoutParams = WindowManager.LayoutParams(
-                120, // width
-                120, // height
+                120, // width - 十字线尺寸
+                120, // height - 十字线尺寸
                 windowType,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT
@@ -220,12 +224,12 @@ class ClickPointService : Service() {
         }
         
         private fun updateClickPosition() {
-            // 更新ClickSettings中的位置
-            ClickSettings.clickX = (layoutParams.x + 60).toFloat() // 圆圈中心
+            // 更新ClickSettings中的位置（十字线中心）
+            ClickSettings.clickX = (layoutParams.x + 60).toFloat() // 十字线中心
             ClickSettings.clickY = (layoutParams.y + 60).toFloat()
             Log.d(TAG, "Updated click position to (${ClickSettings.clickX}, ${ClickSettings.clickY})")
         }
-        
+
         fun getX(): Float = (layoutParams.x + 60).toFloat()
         fun getY(): Float = (layoutParams.y + 60).toFloat()
     }

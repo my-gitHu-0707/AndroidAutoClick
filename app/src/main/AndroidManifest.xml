@@ -8,6 +8,12 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- 前台服务权限 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- 高级悬浮窗权限（系统级别） -->
+    <uses-permission android:name="android.permission.INTERNAL_SYSTEM_WINDOW"
+        tools:ignore="ProtectedPermissions" />
+    <!-- 触摸事件权限 -->
+    <uses-permission android:name="android.permission.INJECT_EVENTS"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:allowBackup="true"
@@ -58,6 +64,21 @@
         <!-- 点击位置管理服务 -->
         <service
             android:name=".service.ClickPointService"
+            android:exported="false" />
+
+        <!-- 悬浮控制面板服务 -->
+        <service
+            android:name=".service.FloatingControlPanelService"
+            android:exported="false" />
+
+        <!-- 添加功能选择器服务 -->
+        <service
+            android:name=".service.AddActionSelectorService"
+            android:exported="false" />
+
+        <!-- 最小化悬浮控制器服务 -->
+        <service
+            android:name=".service.FloatingMiniControllerService"
             android:exported="false" />
 
     </application>

@@ -13,6 +13,8 @@ import com.autoclick.app.databinding.ActivityMainBinding
 import com.autoclick.app.service.AutoClickService
 import com.autoclick.app.service.FloatingWindowService
 import com.autoclick.app.service.ClickPointService
+import com.autoclick.app.service.FloatingControlPanelService
+import com.autoclick.app.service.FloatingControllerManager
 import com.autoclick.app.utils.ClickSettings
 import com.autoclick.app.utils.PermissionUtils
 
@@ -70,36 +72,46 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun setupListeners() {
-        // 无障碍设置按钮
+        // 新建点击器卡片
+        binding.cardNewClicker.setOnClickListener {
+            createNewClicker()
+        }
+
+        // AI自主操作卡片
+        binding.cardAIOperation.setOnClickListener {
+            Toast.makeText(this, "AI功能开发中...", Toast.LENGTH_SHORT).show()
+        }
+
+        // 教程说明卡片
+        binding.cardTutorial.setOnClickListener {
+            showTutorial()
+        }
+
+        // 保持原有按钮的兼容性（隐藏状态）
         binding.btnAccessibilitySettings.setOnClickListener {
             Log.d("MainActivity", "Accessibility settings button clicked")
             Toast.makeText(this, "正在打开无障碍设置...", Toast.LENGTH_SHORT).show()
             PermissionUtils.openAccessibilitySettings(this)
         }
 
-        // 悬浮窗设置按钮
         binding.btnOverlaySettings.setOnClickListener {
             Log.d("MainActivity", "Overlay settings button clicked")
             Toast.makeText(this, "正在打开悬浮窗设置...", Toast.LENGTH_SHORT).show()
             PermissionUtils.openOverlaySettings(this)
         }
-        
-        // 开始/停止按钮
+
         binding.btnStartStop.setOnClickListener {
             toggleAutoClick()
         }
-        
-        // 悬浮窗按钮
+
         binding.btnFloatingWindow.setOnClickListener {
             toggleFloatingWindow()
         }
 
-        // 添加点击点按钮
         binding.btnAddClickPoint.setOnClickListener {
             addClickPoint()
         }
 
-        // 管理点击点按钮
         binding.btnManagePoints.setOnClickListener {
             manageClickPoints()
         }
@@ -125,6 +137,9 @@ class MainActivity : AppCompatActivity() {
         
         // 加载保存的设置
         loadSettings()
+
+        // 更新悬浮窗按钮文本
+        updateFloatingWindowButtonText()
     }
     
     private fun updatePermissionStatus() {
@@ -181,15 +196,32 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun toggleFloatingWindow() {
-        if (isFloatingWindowShown) {
-            stopService(Intent(this, FloatingWindowService::class.java))
-            isFloatingWindowShown = false
-            binding.btnFloatingWindow.text = getString(R.string.show_floating_window)
-        } else {
-            startService(Intent(this, FloatingWindowService::class.java))
-            isFloatingWindowShown = true
-            binding.btnFloatingWindow.text = getString(R.string.hide_floating_window)
+        if (!PermissionUtils.canDrawOverlays(this)) {
+            Toast.makeText(this, "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        val currentController = FloatingControllerManager.getCurrentController()
+
+        when (currentController) {
+            FloatingControllerManager.ControllerType.NONE -> {
+                // 启动最小化控制器
+                FloatingControllerManager.showMiniController(this)
+                Toast.makeText(this, "最小化控制器已显示", Toast.LENGTH_SHORT).show()
+            }
+            FloatingControllerManager.ControllerType.MINI_CONTROLLER -> {
+                // 切换到完整面板
+                FloatingControllerManager.switchToFullPanel(this)
+                Toast.makeText(this, "已切换到完整控制面板", Toast.LENGTH_SHORT).show()
+            }
+            FloatingControllerManager.ControllerType.FULL_PANEL -> {
+                // 关闭所有控制器
+                FloatingControllerManager.hideAllControllers(this)
+                Toast.makeText(this, "悬浮控制器已关闭", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        updateFloatingWindowButtonText()
     }
     
     private fun updateClickStatus(isRunning: Boolean) {
@@ -243,5 +275,34 @@ class MainActivity : AppCompatActivity() {
         }
         startService(intent)
         Toast.makeText(this, "已清除所有点击位置", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun createNewClicker() {
+        if (!PermissionUtils.hasAllPermissions(this)) {
+            Toast.makeText(this, "请先授予必要权限", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // 使用管理器启动悬浮控制面板
+        FloatingControllerManager.showFullPanel(this)
+        Toast.makeText(this, "悬浮控制面板已启动", Toast.LENGTH_SHORT).show()
+
+        // 最小化主界面
+        moveTaskToBack(true)
+    }
+
+    private fun showTutorial() {
+        Toast.makeText(this, "教程功能开发中...", Toast.LENGTH_SHORT).show()
+        // TODO: 实现教程功能
+    }
+
+    private fun updateFloatingWindowButtonText() {
+        val currentController = FloatingControllerManager.getCurrentController()
+        val buttonText = when (currentController) {
+            FloatingControllerManager.ControllerType.NONE -> "显示悬浮控制器"
+            FloatingControllerManager.ControllerType.MINI_CONTROLLER -> "展开完整面板"
+            FloatingControllerManager.ControllerType.FULL_PANEL -> "关闭悬浮控制器"
+        }
+        binding.btnFloatingWindow.text = buttonText
     }
 }
