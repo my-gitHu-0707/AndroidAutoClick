@@ -68,9 +68,11 @@ object ClickSettings {
     var clickInterval: Long
         get() = if (_clickPoints.isNotEmpty()) _clickPoints[0].interval else globalInterval
         set(value) {
-            globalInterval = value
+            // 设置最小间隔为100毫秒，防止系统过载
+            val safeValue = maxOf(value, 100L)
+            globalInterval = safeValue
             if (_clickPoints.isNotEmpty()) {
-                _clickPoints[0].interval = value
+                _clickPoints[0].interval = safeValue
                 saveClickPoints()
             }
         }
