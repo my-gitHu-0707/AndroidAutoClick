@@ -79,12 +79,23 @@ class AutoClickService : AccessibilityService() {
 
         clickRunnable = object : Runnable {
             override fun run() {
-                if (isClicking.get()) {
-                    performNextClick()
-                    // 使用当前点击位置的间隔
-                    val interval = getCurrentClickInterval()
-                    clickHandler?.postDelayed(this, interval)
+                // 高优先级检查停止标志，确保立即响应
+                if (!isClicking.get()) {
+                    Log.d(TAG, "Click loop stopped by flag check")
+                    return
                 }
+
+                performNextClick()
+
+                // 再次检查停止标志，确保在延迟前能立即停止
+                if (!isClicking.get()) {
+                    Log.d(TAG, "Click loop stopped after click execution")
+                    return
+                }
+
+                // 使用当前点击位置的间隔
+                val interval = getCurrentClickInterval()
+                clickHandler?.postDelayed(this, interval)
             }
         }
 
@@ -98,16 +109,27 @@ class AutoClickService : AccessibilityService() {
     }
     
     /**
-     * 停止自动点击
+     * 停止自动点击 - 高优先级，立即响应
      */
     fun stopAutoClick() {
+        Log.d(TAG, "Stop auto click requested - immediate response")
+
+        // 立即设置停止标志，确保最高优先级
         isClicking.set(false)
-        clickRunnable?.let { clickHandler?.removeCallbacks(it) }
+
+        // 立即移除所有待执行的点击任务
+        clickRunnable?.let {
+            clickHandler?.removeCallbacks(it)
+            Log.d(TAG, "Removed pending click callbacks")
+        }
+
+        // 立即清理线程资源
         cleanupHandlerThread()
         clickRunnable = null
-        Log.d(TAG, "Auto click stopped")
 
-        // 在主线程发送广播
+        Log.d(TAG, "Auto click stopped immediately")
+
+        // 在主线程立即发送广播
         mainHandler.post {
             sendBroadcast(Intent("com.autoclick.app.CLICK_STOPPED"))
         }

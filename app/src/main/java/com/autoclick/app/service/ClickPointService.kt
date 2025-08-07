@@ -148,8 +148,8 @@ class ClickPointService : Service() {
             }
             
             layoutParams = WindowManager.LayoutParams(
-                120, // width - 十字线尺寸
-                120, // height - 十字线尺寸
+                50, // width - 小圆圈尺寸
+                50, // height - 小圆圈尺寸
                 windowType,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT
@@ -225,14 +225,14 @@ class ClickPointService : Service() {
         }
         
         private fun updateClickPosition() {
-            // 更新ClickSettings中的位置（十字线中心）
-            ClickSettings.clickX = (layoutParams.x + 60).toFloat() // 十字线中心
-            ClickSettings.clickY = (layoutParams.y + 60).toFloat()
+            // 更新ClickSettings中的位置（圆圈中心）
+            ClickSettings.clickX = (layoutParams.x + 25).toFloat() // 圆圈中心
+            ClickSettings.clickY = (layoutParams.y + 25).toFloat()
             Log.d(TAG, "Updated click position to (${ClickSettings.clickX}, ${ClickSettings.clickY})")
         }
 
-        fun getX(): Float = (layoutParams.x + 60).toFloat()
-        fun getY(): Float = (layoutParams.y + 60).toFloat()
+        fun getX(): Float = (layoutParams.x + 25).toFloat()
+        fun getY(): Float = (layoutParams.y + 25).toFloat()
     }
 
     /**

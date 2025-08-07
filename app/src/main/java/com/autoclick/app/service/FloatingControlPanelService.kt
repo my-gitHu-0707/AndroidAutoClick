@@ -158,9 +158,27 @@ class FloatingControlPanelService : Service() {
             layoutHide = view.findViewById(R.id.layoutHide)
             layoutSettings = view.findViewById(R.id.layoutSettings)
 
-            // 设置点击监听器
+            // 设置点击监听器 - 开始/停止按钮最高优先级
             layoutExecute.setOnClickListener {
+                // 立即响应，不管当前状态如何
+                Log.d(TAG, "Execute button clicked - immediate response")
                 toggleAutoClick()
+            }
+
+            // 设置多重点击监听，确保响应性
+            layoutExecute.setOnTouchListener { _, event ->
+                when (event.action) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        Log.d(TAG, "Execute button touch down - preparing immediate response")
+                        true
+                    }
+                    android.view.MotionEvent.ACTION_UP -> {
+                        Log.d(TAG, "Execute button touch up - triggering action")
+                        toggleAutoClick()
+                        true
+                    }
+                    else -> false
+                }
             }
             
             layoutAdd.setOnClickListener {
@@ -234,17 +252,31 @@ class FloatingControlPanelService : Service() {
     }
     
     private fun toggleAutoClick() {
+        Log.d(TAG, "toggleAutoClick called - checking service")
         val service = AutoClickService.instance
         if (service == null) {
             Log.w(TAG, "AutoClickService not available")
-            Toast.makeText(this, "自动点击服务未启动", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "无障碍服务未启用", Toast.LENGTH_SHORT).show()
             return
         }
-        
-        if (service.isAutoClicking()) {
+
+        val isCurrentlyClicking = service.isAutoClicking()
+        Log.d(TAG, "Current clicking state: $isCurrentlyClicking")
+
+        if (isCurrentlyClicking) {
+            // 停止操作 - 最高优先级，立即执行
+            Log.d(TAG, "Stopping auto click - IMMEDIATE PRIORITY")
             service.stopAutoClick()
+            // 立即更新UI状态
+            updateExecuteButton(false)
+            Toast.makeText(this, "已停止", Toast.LENGTH_SHORT).show()
         } else {
+            // 开始操作
+            Log.d(TAG, "Starting auto click")
             service.startAutoClick()
+            // 立即更新UI状态
+            updateExecuteButton(true)
+            Toast.makeText(this, "已开始", Toast.LENGTH_SHORT).show()
         }
     }
     
