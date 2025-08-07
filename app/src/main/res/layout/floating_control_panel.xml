@@ -164,6 +164,8 @@
                 android:textColor="#FFFFFF"
                 android:textSize="9sp" />
 
+        </LinearLayout>
+
         <!-- 设置按钮 -->
         <LinearLayout
             android:id="@+id/layoutSettings"
