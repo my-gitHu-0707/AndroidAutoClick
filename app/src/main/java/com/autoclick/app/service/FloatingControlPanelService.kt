@@ -17,7 +17,6 @@ import android.widget.Toast
 import com.autoclick.app.MainActivity
 import com.autoclick.app.R
 import com.autoclick.app.utils.PermissionUtils
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class FloatingControlPanelService : Service() {
     
@@ -32,7 +31,7 @@ class FloatingControlPanelService : Service() {
     private var isExpanded = true
     
     // UI组件
-    private lateinit var fabExecute: FloatingActionButton
+    private lateinit var layoutExecute: LinearLayout
     private lateinit var layoutAdd: LinearLayout
     private lateinit var layoutDelete: LinearLayout
     private lateinit var layoutList: LinearLayout
@@ -154,7 +153,7 @@ class FloatingControlPanelService : Service() {
     
     private fun initViews() {
         floatingView?.let { view ->
-            fabExecute = view.findViewById(R.id.fabExecute)
+            layoutExecute = view.findViewById(R.id.layoutExecute)
             layoutAdd = view.findViewById(R.id.layoutAdd)
             layoutDelete = view.findViewById(R.id.layoutDelete)
             layoutList = view.findViewById(R.id.layoutList)
@@ -162,9 +161,9 @@ class FloatingControlPanelService : Service() {
             layoutHide = view.findViewById(R.id.layoutHide)
             layoutSettings = view.findViewById(R.id.layoutSettings)
             layoutSave = view.findViewById(R.id.layoutSave)
-            
+
             // 设置点击监听器
-            fabExecute.setOnClickListener {
+            layoutExecute.setOnClickListener {
                 toggleAutoClick()
             }
             
