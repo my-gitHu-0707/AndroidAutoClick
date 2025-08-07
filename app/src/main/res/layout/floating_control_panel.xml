@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/floating_panel_background"
-    android:padding="8dp">
+    android:padding="4dp">
 
     <!-- 执行按钮 -->
     <LinearLayout
@@ -14,35 +14,35 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="8dp"
+        android:padding="4dp"
         android:background="@android:color/transparent"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="8dp">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/ic_play"
             android:background="@drawable/circle_green_bg"
-            android:padding="8dp"
-            android:layout_marginBottom="4dp" />
+            android:padding="4dp"
+            android:layout_marginBottom="2dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="执行"
             android:textColor="#FFFFFF"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textStyle="bold" />
 
     </LinearLayout>
 
     <!-- 分隔线 -->
     <View
-        android:layout_width="40dp"
+        android:layout_width="30dp"
         android:layout_height="1dp"
         android:background="#66FFFFFF"
         android:layout_gravity="center"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="6dp" />
 
     <!-- 添加按钮 -->
     <LinearLayout
@@ -51,184 +51,144 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="8dp"
+        android:padding="4dp"
         android:background="@android:color/transparent"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="6dp">
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:src="@drawable/ic_add"
             android:tint="#FFFFFF"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="2dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="添加"
             android:textColor="#FFFFFF"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
 
     </LinearLayout>
 
-    <!-- 删除按钮 -->
+    <!-- 水平按钮组 -->
     <LinearLayout
-        android:id="@+id/layoutDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="8dp"
-        android:background="@android:color/transparent"
-        android:layout_marginBottom="16dp">
+        android:orientation="horizontal"
+        android:layout_marginBottom="6dp">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_delete"
-            android:tint="#FFFFFF"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
+        <!-- 删除按钮 -->
+        <LinearLayout
+            android:id="@+id/layoutDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="删除"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="4dp"
+            android:background="@android:color/transparent"
+            android:layout_marginEnd="8dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_delete"
+                android:tint="#FFFFFF"
+                android:layout_marginBottom="2dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="删除"
+                android:textColor="#FFFFFF"
+                android:textSize="9sp" />
+
+        </LinearLayout>
+
+        <!-- 列表按钮 -->
+        <LinearLayout
+            android:id="@+id/layoutList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="4dp"
+            android:background="@android:color/transparent">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_list"
+                android:tint="#FFFFFF"
+                android:layout_marginBottom="2dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="列表"
+                android:textColor="#FFFFFF"
+                android:textSize="9sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <!-- 列表按钮 -->
+    <!-- 底部按钮组 -->
     <LinearLayout
-        android:id="@+id/layoutList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="8dp"
-        android:background="@android:color/transparent"
-        android:layout_marginBottom="16dp">
+        android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_list"
-            android:tint="#FFFFFF"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
+        <!-- 隐藏按钮 -->
+        <LinearLayout
+            android:id="@+id/layoutHide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="列表"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="4dp"
+            android:background="@android:color/transparent"
+            android:layout_marginEnd="8dp">
 
-    </LinearLayout>
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_hide"
+                android:tint="#FFFFFF"
+                android:layout_marginBottom="2dp" />
 
-    <!-- 录制按钮 -->
-    <LinearLayout
-        android:id="@+id/layoutRecord"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="8dp"
-        android:background="@android:color/transparent"
-        android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="隐藏"
+                android:textColor="#FFFFFF"
+                android:textSize="9sp" />
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_record"
-            android:tint="#9CCC65"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
+        <!-- 设置按钮 -->
+        <LinearLayout
+            android:id="@+id/layoutSettings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="录制"
-            android:textColor="#9CCC65"
-            android:textSize="12sp" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="4dp"
+            android:background="@android:color/transparent">
 
-    </LinearLayout>
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_settings"
+                android:tint="#FFFFFF"
+                android:layout_marginBottom="2dp" />
 
-    <!-- 隐藏按钮 -->
-    <LinearLayout
-        android:id="@+id/layoutHide"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="8dp"
-        android:background="@android:color/transparent"
-        android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设置"
+                android:textColor="#FFFFFF"
+                android:textSize="9sp" />
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_hide"
-            android:tint="#FFFFFF"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="隐藏"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp" />
-
-    </LinearLayout>
-
-    <!-- 设置按钮 -->
-    <LinearLayout
-        android:id="@+id/layoutSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="8dp"
-        android:background="@android:color/transparent"
-        android:layout_marginBottom="16dp">
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_settings"
-            android:tint="#FFFFFF"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="设置"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp" />
-
-    </LinearLayout>
-
-    <!-- 保存按钮 -->
-    <LinearLayout
-        android:id="@+id/layoutSave"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="8dp"
-        android:background="@android:color/transparent">
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_save"
-            android:tint="#FFFFFF"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="保存"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -238,8 +198,8 @@
         android:layout_height="wrap_content"
         android:text="长按关闭"
         android:textColor="#9CCC65"
-        android:textSize="10sp"
+        android:textSize="8sp"
         android:layout_gravity="center"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="4dp" />
 
 </LinearLayout>

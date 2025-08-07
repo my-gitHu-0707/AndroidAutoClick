@@ -35,10 +35,8 @@ class FloatingControlPanelService : Service() {
     private lateinit var layoutAdd: LinearLayout
     private lateinit var layoutDelete: LinearLayout
     private lateinit var layoutList: LinearLayout
-    private lateinit var layoutRecord: LinearLayout
     private lateinit var layoutHide: LinearLayout
     private lateinit var layoutSettings: LinearLayout
-    private lateinit var layoutSave: LinearLayout
     
     private val serviceReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -157,10 +155,8 @@ class FloatingControlPanelService : Service() {
             layoutAdd = view.findViewById(R.id.layoutAdd)
             layoutDelete = view.findViewById(R.id.layoutDelete)
             layoutList = view.findViewById(R.id.layoutList)
-            layoutRecord = view.findViewById(R.id.layoutRecord)
             layoutHide = view.findViewById(R.id.layoutHide)
             layoutSettings = view.findViewById(R.id.layoutSettings)
-            layoutSave = view.findViewById(R.id.layoutSave)
 
             // 设置点击监听器
             layoutExecute.setOnClickListener {
@@ -179,20 +175,12 @@ class FloatingControlPanelService : Service() {
                 openMainActivity()
             }
             
-            layoutRecord.setOnClickListener {
-                toggleRecording()
-            }
-            
             layoutHide.setOnClickListener {
                 hidePanel()
             }
-            
+
             layoutSettings.setOnClickListener {
                 openMainActivity()
-            }
-            
-            layoutSave.setOnClickListener {
-                saveCurrentTask()
             }
             
             // 设置长按监听器（关闭面板）
@@ -261,9 +249,17 @@ class FloatingControlPanelService : Service() {
     }
     
     private fun showAddOptions() {
-        // 启动添加功能选择器
-        val intent = Intent(this, AddActionSelectorService::class.java)
-        startService(intent)
+        Log.d(TAG, "showAddOptions called")
+        try {
+            // 启动添加功能选择器
+            val intent = Intent(this, AddActionSelectorService::class.java)
+            startService(intent)
+            Log.d(TAG, "AddActionSelectorService started")
+            Toast.makeText(this, "正在显示添加选项...", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start AddActionSelectorService", e)
+            Toast.makeText(this, "启动添加选项失败: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
     
     private fun deleteAllClickPoints() {
@@ -274,19 +270,9 @@ class FloatingControlPanelService : Service() {
         Toast.makeText(this, "已清除所有点击位置", Toast.LENGTH_SHORT).show()
     }
     
-    private fun toggleRecording() {
-        // TODO: 实现录制功能
-        Toast.makeText(this, "录制功能开发中...", Toast.LENGTH_SHORT).show()
-    }
-    
     private fun hidePanel() {
         // 使用管理器切换到最小化控制器
         FloatingControllerManager.switchToMiniController(this)
-    }
-    
-    private fun saveCurrentTask() {
-        // TODO: 实现保存任务功能
-        Toast.makeText(this, "任务已保存", Toast.LENGTH_SHORT).show()
     }
     
     private fun openMainActivity() {
