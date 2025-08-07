@@ -61,12 +61,7 @@ class AddActionSelectorService : Service() {
             
             // 初始化UI组件
             initViews()
-            
-            // 获取屏幕尺寸
-            val displayMetrics = resources.displayMetrics
-            val screenWidth = displayMetrics.widthPixels
-            val screenHeight = displayMetrics.heightPixels
-            
+
             // 设置窗口参数（居中显示）
             val layoutParams = WindowManager.LayoutParams().apply {
                 width = WindowManager.LayoutParams.WRAP_CONTENT
